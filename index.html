@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ჩემი სიურპრიზი</title>
+    <style>
+        /* CSS ნაწილი - დიზაინი */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffe6f2; /* ღია ვარდისფერი ფონი */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; /* რომ გულებმა გვერდზე არ გაწიონ ეკრანი */
+        }
+
+        h1 {
+            color: #ff3385;
+            margin-top: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ფოტოების გალერეა */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 80%;
+            max-width: 1000px;
+            margin: 40px 0;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover; /* ფოტოები რომ არ გაიწელოს */
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease; /* მაუსის მიტანის ეფექტი */
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05) rotate(3deg); /* ოდნავ დიდდება და ტრიალდება */
+        }
+
+        /* ტაიმერის სექცია */
+        .timer-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 50px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .timer-section h2 {
+            color: #ff3385;
+            margin-bottom: 10px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .heart-icon {
+            font-size: 3rem;
+            color: #ff3385;
+            animation: beat 1s infinite; /* გულისცემის ანიმაცია */
+        }
+
+        @keyframes beat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* ანიმაციური გულები ფონზე */
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* რომ ტექსტის უკან იყოს */
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 51, 133, 0.6);
+            font-size: 20px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+
+        /* მუსიკის ღილაკი */
+        #musicBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff3385;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ფონური ანიმაცია (გულები) -->
+    <div class="hearts" id="heartsContainer"></div>
+
+    <h1>საჩუქარი სპეციალურად შენთვის! ❤️</h1>
+
+    <!-- ფოტოების გალერეა - ჩასვი შენი ფოტოები photo1.jpg და ა.შ. -->
+    <div class="gallery">
+        <img src="photo1.jpg" alt="ჩვენი ფოტო 1">
+        <img src="photo2.jpg" alt="ჩვენი ფოტო 2">
+        <img src="photo3.jpg" alt="ჩვენი ფოტო 3">
+        <img src="photo4.jpg" alt="ჩვენი ფოტო 4">
+        <img src="photo5.jpg" alt="ჩვენი ფოტო 5">
+        <img src="photo6.jpg" alt="ჩვენი ფოტო 6">
+        <img src="photo7.jpg" alt="ჩვენი ფოტო 7">
+    </div>
+
+    <!-- ტაიმერის სექცია -->
+    <div class="timer-section">
+        <div class="heart-icon">❤️</div>
+        <h2>ჩვენ უკვე ერთად ვართ:</h2>
+        <div class="timer-display" id="timer">იტვირთება...</div>
+        <p>და ასე იქნება სულ! ✨</p>
+    </div>
+
+    <!-- მუსიკის ელემენტი (საჭიროა .mp3 ფაილი) -->
+    <!-- <audio id="myAudio" loop>
+        <source src="back_to_be_friends.mp3" type="audio/mpeg">
+        შენს ბრაუზერს არ აქვს აუდიოს მხარდაჭერა.
+    </audio>
+    <button id="musicBtn" onclick="toggleMusic()">🎵 ჩართე მუსიკა</button> -->
+
+    <script>
+        // JS ნაწილი - ლოგიკა და ანიმაციები
+
+        // 1. ტაიმერის ფუნქცია (11 მარტიდან)
+        const startDate = new Date('March 11, 2024 00:00:00').getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = now - startDate;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerHTML = `${days} დღე, ${hours} საათი, ${minutes} წუთი, ${seconds} წამი`;
+        }
+
+        setInterval(updateTimer, 1000); // ყოველ წამს განაახლოს
+        updateTimer(); // პირველადვე ჩართოს
+
+        // 2. ფონური გულების ანიმაცია
+        const heartsContainer = document.getElementById('heartsContainer');
+        const heartSymbols = ['❤️', '💖', '💗', '💓', '💕'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+            heart.style.left = Math.random() * 100 + 'vw'; // შემთხვევითი პოზიცია ჰორიზონტალურად
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's'; // შემთხვევითი სიჩქარე (2-5 წამი)
+            heart.style.opacity = Math.random() * 0.5 + 0.5; // შემთხვევითი გამჭვირვალობა
+            
+            heartsContainer.appendChild(heart);
+
+            // 5 წამის შემდეგ წაშალოს გული, რომ ეკრანი არ გადაიტვირთოს
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        setInterval(createHeart, 300); // ყოველ 0.3 წამში შექმნას ახალი გული
+
+        // 3. მუსიკის ფუნქცია (კომენტირებულია, სანამ .mp3 ფაილი არ გექნება)
+        /*
+        const audio = document.getElementById("myAudio");
+        const btn = document.getElementById("musicBtn");
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                btn.innerHTML = "⏸️ გააჩერე მუსიკა";
+            } else {
+                audio.pause();
+                btn.innerHTML = "🎵 ჩართე მუსიკა";
+            }
+        }
+        */
+    </script>
+</body>
+</html>
